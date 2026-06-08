@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QuickPay — Pay Now</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #1a56db;
+    --blue-dark: #1040b0;
+    --blue-light: rgba(26,86,219,0.12);
+    --black: #080c14;
+    --surface: #0d1220;
+    --surface2: #111827;
+    --white: #ffffff;
+    --gray: rgba(255,255,255,0.45);
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --success: #10b981;
+    --error: #ef4444;
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(26,86,219,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,86,219,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+
+
+  /* NAV */
+  nav {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 64px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,12,20,0.8);
+    backdrop-filter: blur(20px);
+  }
+  .logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+  .logo-mark {
+    width: 32px; height: 32px; background: var(--blue); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 13px; color: white;
+  }
+  .logo-text { font-size: 17px; font-weight: 700; color: var(--white); letter-spacing: -0.3px; }
+
+  .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-link {
+    color: rgba(255,255,255,0.5); text-decoration: none;
+    font-size: 14px; font-weight: 500; transition: color 0.15s;
+  }
+  .nav-link:hover { color: var(--white); }
+  .btn-nav {
+    background: rgba(255,255,255,0.07); border: 1px solid var(--border2);
+    color: var(--white); padding: 8px 18px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; text-decoration: none;
+    transition: background 0.15s;
+  }
+  .btn-nav:hover { background: rgba(255,255,255,0.12); }
+
+  /* USER NAV STATE */
+  .nav-user {
+    display: none;
+    align-items: center; gap: 10px;
+  }
+  .nav-avatar {
+    width: 30px; height: 30px; background: var(--blue); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+  }
+  .nav-name { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8); }
+  .btn-nav-dash {
+    background: var(--blue); color: white; padding: 7px 16px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; text-decoration: none; transition: background 0.15s;
+  }
+  .btn-nav-dash:hover { background: var(--blue-dark); }
+
+  /* MAIN */
+  main {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    padding: 60px 20px; position: relative; z-index: 1;
+  }
+
+  .container {
+    width: 100%; max-width: 480px;
+    animation: fadeUp 0.5s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* BADGE */
+  .badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--blue-light); border: 1px solid rgba(26,86,219,0.3);
+    color: #6b9fff; font-size: 12px; font-weight: 600;
+    padding: 6px 14px; border-radius: 100px; margin-bottom: 24px;
+    letter-spacing: 0.3px;
+  }
+  .badge-dot {
+    width: 6px; height: 6px; background: #6b9fff; border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+  /* HERO TEXT */
+  .hero-title {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-weight: 800; letter-spacing: -1px;
+    line-height: 1.1; margin-bottom: 10px;
+  }
+  .hero-title em { font-style: normal; color: #6b9fff; }
+  .hero-sub {
+    color: var(--gray); font-size: 15px; line-height: 1.6; margin-bottom: 32px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px;
+  }
+
+  /* AUTH WALL */
+  .auth-wall {
+    text-align: center; padding: 8px 0 16px;
+  }
+  .auth-wall-icon { font-size: 36px; margin-bottom: 14px; }
+  .auth-wall-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .auth-wall-sub { font-size: 14px; color: var(--gray); margin-bottom: 24px; line-height: 1.6; }
+  .auth-wall-btns { display: flex; gap: 12px; }
+  .btn-login {
+    flex: 1; background: var(--blue); color: white; padding: 13px;
+    border-radius: 10px; font-size: 14px; font-weight: 700;
+    text-decoration: none; text-align: center; transition: background 0.15s;
+  }
+  .btn-login:hover { background: var(--blue-dark); }
+  .btn-register {
+    flex: 1; background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8);
+    padding: 13px; border-radius: 10px; font-size: 14px; font-weight: 600;
+    text-decoration: none; text-align: center; border: 1px solid var(--border2);
+    transition: background 0.15s;
+  }
+  .btn-register:hover { background: rgba(255,255,255,0.09); }
+
+  /* FORM */
+  .form-group { margin-bottom: 20px; }
+  .form-label {
+    display: block; font-size: 13px; font-weight: 600;
+    color: rgba(255,255,255,0.7); margin-bottom: 8px;
+  }
+  .input-wrap { position: relative; display: flex; align-items: center; }
+  .input-icon {
+    position: absolute; left: 14px;
+    color: rgba(255,255,255,0.3); font-size: 15px; pointer-events: none;
+  }
+  .form-input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 13px 14px 13px 42px;
+    color: var(--white); font-family: 'Inter', sans-serif;
+    font-size: 15px; outline: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .form-input:focus {
+    border-color: var(--blue);
+    background: rgba(26,86,219,0.06);
+  }
+  .form-input::placeholder { color: rgba(255,255,255,0.2); }
+
+  .amount-prefix {
+    position: absolute; left: 14px;
+    color: rgba(255,255,255,0.4); font-size: 14px;
+    font-weight: 600; pointer-events: none;
+  }
+  .amount-input { padding-left: 52px !important; }
+
+  /* MERCHANT INFO BOX */
+  .merchant-box {
+    background: rgba(26,86,219,0.08);
+    border: 1px solid rgba(26,86,219,0.2);
+    border-radius: 12px; padding: 14px 16px;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .merchant-box-icon { font-size: 18px; }
+  .merchant-box-label { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; }
+  .merchant-box-name { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9); }
+
+  /* ALERT */
+  .alert {
+    display: none; padding: 13px 16px; border-radius: 10px;
+    font-size: 14px; margin-bottom: 20px;
+    align-items: center; gap: 10px;
+  }
+  .alert.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #6ee7b7; }
+  .alert.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; }
+  .alert.show { display: flex; }
+
+  /* PAY BUTTON */
+  .btn-pay {
+    width: 100%; background: var(--blue); color: white; border: none;
+    border-radius: 12px; padding: 15px; font-family: 'Inter', sans-serif;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(26,86,219,0.3);
+  }
+  .btn-pay:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 8px 28px rgba(26,86,219,0.4); }
+  .btn-pay:disabled { opacity: 0.6; pointer-events: none; }
+
+  .security-note {
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px; margin-top: 14px;
+    color: rgba(255,255,255,0.25); font-size: 12px;
+  }
+
+  .mpesa-badge {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 10px; margin-top: 12px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+  }
+  .mpesa-logo { font-size: 13px; font-weight: 800; letter-spacing: 0.5px; color: rgba(255,255,255,0.5); }
+  .mpesa-text { font-size: 11px; color: rgba(255,255,255,0.3); }
+
+  /* FOOTER */
+  footer {
+    position: relative; z-index: 1; text-align: center;
+    padding: 20px; color: rgba(255,255,255,0.2);
+    font-size: 12px; border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-mark">QP</div>
+    <span class="logo-text">QuickPay</span>
+  </a>
+  <div class="nav-right">
+    <!-- Guest state -->
+    <div id="navGuest" style="display:flex; align-items:center; gap:16px;">
+      <a href="#" class="nav-link">How it works</a>
+      <a href="/api/auth/login-page" class="btn-nav">Sign in</a>
+    </div>
+    <!-- Logged in state -->
+    <div class="nav-user" id="navUser">
+      <div class="nav-avatar" id="navAvatar">C</div>
+      <span class="nav-name" id="navName">Customer</span>
+      <a href="/api/auth/dashboard-page" class="btn-nav-dash">My Payments</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <div class="badge">
+      <div class="badge-dot"></div>
+      Secured by M-Pesa · Daraja API
+    </div>
+
+    <h1 class="hero-title">Pay with <em>M-Pesa</em>,<br>instantly online.</h1>
+    <p class="hero-sub">Enter your M-Pesa number and amount. You'll receive a prompt on your phone to approve the payment.</p>
+
+    <div class="card">
+      <div class="alert" id="alert">
+        <span id="alertIcon">✓</span>
+        <span id="alertMsg"></span>
+      </div>
+
+      <!-- AUTH WALL — shown when not logged in -->
+      <div id="authWall" class="auth-wall">
+        <div class="auth-wall-icon">🔐</div>
+        <div class="auth-wall-title">Sign in to make a payment</div>
+        <div class="auth-wall-sub">You need a QuickPay account to make payments. It only takes a minute to create one.</div>
+        <div class="auth-wall-btns">
+          <a href="/api/auth/login-page" class="btn-login">Sign in</a>
+          <a href="/api/auth/register-page" class="btn-register">Create account</a>
+        </div>
+      </div>
+
+      <!-- PAYMENT FORM — shown when logged in -->
+      <div id="payForm" style="display:none;">
+        <div class="merchant-box" id="merchantBox">
+          <div class="merchant-box-icon">🏪</div>
+          <div>
+            <div class="merchant-box-label">Paying to</div>
+            <div class="merchant-box-name" id="merchantName">QuickPay Merchant</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Your M-Pesa Phone Number</label>
+          <div class="input-wrap">
+            <span class="input-icon">📱</span>
+            <input type="text" class="form-input" id="phone" placeholder="258840000000" maxlength="12"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Amount (MZN)</label>
+          <div class="input-wrap">
+            <span class="amount-prefix">MZN</span>
+            <input type="number" class="form-input amount-input" id="amount" placeholder="0.00" min="1" step="0.01"/>
+          </div>
+        </div>
+
+        <button class="btn-pay" id="payBtn" onclick="handlePay()">
+          <span id="btnText">⚡ Pay Now</span>
+        </button>
+
+        <div class="security-note">Powered by Safaricom</div>
+
+        <div class="mpesa-badge">
+          <span class="mpesa-logo">M-PESA</span>
+          <span class="mpesa-text">Payments processed securely via Safaricom Daraja API</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>© 2026 QuickPay · Built for Mozambique · Powered by M-Pesa</footer>
+
+<script>
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  // Get merchant_id from URL params e.g. /api/payments/?merchant_id=1
+  const urlParams = new URLSearchParams(window.location.search);
+  const merchantId = urlParams.get('merchant_id') || '1';
+
+  // Set nav state
+  if (token && user.name) {
+    document.getElementById('navGuest').style.display = 'none';
+    document.getElementById('navUser').style.display = 'flex';
+    document.getElementById('navAvatar').textContent = user.name.charAt(0).toUpperCase();
+    document.getElementById('navName').textContent = user.name;
+  }
+
+  // Show form or auth wall based on login state
+  if (token && user.role === 'Customer') {
+    document.getElementById('authWall').style.display = 'none';
+    document.getElementById('payForm').style.display = 'block';
+    // Pre-fill phone from user profile
+    if (user.phone) document.getElementById('phone').value = user.phone;
+  } else if (token && user.role === 'Merchant') {
+    // Merchants shouldn't be paying — redirect to dashboard
+    window.location.href = '/api/auth/dashboard-page';
+  }
+
+  function showAlert(type, msg) {
+    const box = document.getElementById('alert');
+    const icon = document.getElementById('alertIcon');
+    const text = document.getElementById('alertMsg');
+    box.className = 'alert ' + type + ' show';
+    icon.textContent = type === 'success' ? '✓' : '✕';
+    text.textContent = msg;
+  }
+
+  async function handlePay() {
+    const phone = document.getElementById('phone').value.trim();
+    const amount = document.getElementById('amount').value.trim();
+    const btn = document.getElementById('payBtn');
+    const btnText = document.getElementById('btnText');
+
+    document.getElementById('alert').className = 'alert';
+
+    if (!phone || !amount) {
+      showAlert('error', 'Please fill in all fields.');
+      return;
+    }
+
+    btn.disabled = true;
+    btnText.textContent = 'Sending request...';
+
+    const formData = new FormData();
+    formData.append('phone', phone);
+    formData.append('amount', amount);
+    formData.append('merchant_id', merchantId);
+
+    try {
+      const res = await fetch('/api/payments/pay', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (res.status === 401) {
+        window.location.href = '/api/auth/login-page';
+        return;
+      }
+
+      if (res.ok) {
+        showAlert('success', 'Payment request sent! Check your phone for the M-Pesa prompt.');
+        document.getElementById('amount').value = '';
+      } else {
+        showAlert('error', data.error || 'Payment failed. Please try again.');
+      }
+    } catch(err) {
+      showAlert('error', 'Connection error. Please check your network.');
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = '⚡ Pay Now';
+    }
+  }
+
+  // Enter key to submit
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && token) handlePay();
+  });
+</script>
+
+</body>
+</html>

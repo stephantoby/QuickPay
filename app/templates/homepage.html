@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QuickPay - Homepage</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #1a56db;
+    --blue-dark: #1040b0;
+    --blue-light: #e8f0fe;
+    --black: #0d0d0d;
+    --gray: #6b7280;
+    --gray-light: #f4f6f9;
+    --white: #ffffff;
+    --border: #e5e7eb;
+    --max: 1200px;
+    --yellow: yellow;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--white);
+    color: var(--black);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--blue);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: -0.5px;
+  }
+  .logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--black);
+    letter-spacing: -0.3px;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-link {
+    text-decoration: none;
+    color: var(--gray);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .nav-link:hover { color: var(--black); background: var(--gray-light); }
+  .btn-nav {
+    text-decoration: none;
+    background: var(--blue);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 9px 20px;
+    border-radius: 8px;
+    transition: background 0.15s;
+  }
+  .btn-nav:hover { background: var(--blue-dark); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(160deg, #f0f5ff 0%, #ffffff 60%);
+    padding: 100px 2rem 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(26,86,219,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+    letter-spacing: 0.2px;
+  }
+  .hero-badge span { font-size: 16px; }
+  .hero h1 {
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    color: var(--black);
+    max-width: 720px;
+    margin: 0 auto 20px;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--blue);
+  }
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--gray);
+    max-width: 520px;
+    margin: 0 auto 48px;
+    font-weight: 400;
+  }
+
+  .cta-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--blue);
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.15s, transform 0.1s;
+    box-shadow: 0 4px 14px rgba(26,86,219,0.3);
+  }
+  .btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    color: var(--black);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1.5px solid var(--border);
+    transition: border-color 0.15s, transform 0.1s;
+  }
+  .btn-secondary:hover { border-color: #9ca3af; transform: translateY(-1px); }
+
+  /* TRUST BAR */
+  .trust-bar {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 2rem;
+    background: white;
+  }
+  .trust-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray);
+  }
+  .trust-dot {
+    width: 8px; height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* HOW IT WORKS */
+  section { padding: 80px 2rem; }
+  .section-inner { max-width: var(--max); margin: 0 auto; }
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    color: var(--black);
+    margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 1rem;
+    color: var(--gray);
+    max-width: 500px;
+    margin-bottom: 60px;
+  }
+
+  /* SPLIT SECTIONS */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .split.reverse { direction: rtl; }
+  .split.reverse > * { direction: ltr; }
+
+  .split-card {
+    background: var(--gray-light);
+    border-radius: 20px;
+    padding: 40px;
+    border: 1px solid var(--border);
+  }
+  .split-card.blue-card {
+    background: linear-gradient(135deg, #1a56db 0%, #1040b0 100%);
+    border: none;
+  }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 28px; }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .step-num {
+    width: 36px; height: 36px;
+    background: var(--blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-body h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--black);
+    margin-bottom: 4px;
+  }
+  .step-body p {
+    font-size: 14px;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+
+  /* MOCK PHONE */
+  .phone-mock {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+  }
+  .mock-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .mock-field { margin-bottom: 16px; }
+  .mock-label { font-size: 11px; font-weight: 600; color: var(--gray); margin-bottom: 4px; }
+  .mock-input {
+    background: var(--gray-light);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--black);
+    border: 1px solid var(--border);
+  }
+  .mock-btn {
+    width: 100%;
+    background: var(--blue);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 8px;
+  }
+  .mock-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: #f0fdf4;
+    border-radius: 8px;
+    border: 1px solid #bbf7d0;
+  }
+  .mock-status-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
+  .mock-status span { font-size: 13px; font-weight: 500; color: #15803d; }
+
+  /* FEATURES GRID */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .feature-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .feature-card:hover { border-color: var(--blue); transform: translateY(-3px); }
+  .feature-icon {
+    width: 44px; height: 44px;
+    background: var(--blue-light);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 20px;
+  }
+  .feature-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 8px;
+    letter-spacing: -0.2px;
+  }
+  .feature-card p {
+    font-size: 14px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+
+  /* DUAL CTA SECTION */
+  .dual-cta {
+    background: var(--gray-light);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .dual-cta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .cta-panel {
+    padding: 60px 48px;
+    position: relative;
+  }
+  .cta-panel.left { border-right: 1px solid var(--border); }
+  .cta-panel.right { background: var(--blue); }
+  .cta-panel-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .cta-panel.left .cta-panel-label { color: var(--blue); }
+  .cta-panel.right .cta-panel-label { color: rgba(255,255,255,0.7); }
+  .cta-panel h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+  .cta-panel.left h2 { color: var(--black); }
+  .cta-panel.right h2 { color: white; }
+  .cta-panel p {
+    font-size: 15px;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+  .cta-panel.left p { color: var(--gray); }
+  .cta-panel.right p { color: rgba(255,255,255,0.8); }
+  .btn-white {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    color: var(--blue);
+    font-size: 15px;
+    font-weight: 700;
+    padding: 13px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: transform 0.15s;
+  }
+  .btn-white:hover { transform: translateY(-1px); }
+  .btn-outline-dark {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    color: var(--black);
+    font-size: 15px;
+    font-weight: 700;
+    padding: 13px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1.5px solid var(--black);
+    transition: background 0.15s, transform 0.15s;
+  }
+  .btn-outline-dark:hover { background: var(--black); color: white; transform: translateY(-1px); }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .footer-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-copy {
+    font-size: 13px;
+    color: var(--gray);
+  }
+  .footer-links {
+    display: flex;
+    gap: 24px;
+  }
+  .footer-links a {
+    font-size: 13px;
+    color: var(--gray);
+    text-decoration: none;
+  }
+  .footer-links a:hover { color: var(--black); }
+
+  /* BG PATTERN */
+  .bg-pattern {
+    background-color: #f8faff;
+    background-image: radial-gradient(#1a56db18 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  @media (max-width: 768px) {
+    .split { grid-template-columns: 1fr; }
+    .split.reverse { direction: ltr; }
+    .dual-cta-grid { grid-template-columns: 1fr; }
+    .cta-panel.left { border-right: none; border-bottom: 1px solid var(--border); }
+    .nav-links .nav-link { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <div class="logo-mark">QP</div>
+      <span class="logo-text">QuickPay</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#how-it-works" class="nav-link">How it works</a>
+      <a href="{{ url_for('auth.login_page') }}" class="nav-link">Sign in</a>
+      <a href="{{ url_for('auth.register_page') }}" class="btn-nav">Get started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span>🇲🇿</span> Bridging M-Pesa &amp; online commerce
+  </div>
+  <h1>M-Pesa payments, <em>now online.</em></h1>
+  <p class="hero-sub">
+    Mozambicans already trust M-Pesa. QuickPay brings it to online commerce so customers can make payments using their mobile money, without needing a bank card or account.
+  </p>
+  <div class="cta-group">
+    <a href="{{ url_for('payments.home') }}" class="btn-primary">
+      Make a payment &rarr;
+    </a>
+    <a href="{{ url_for('auth.register_page') }}" class="btn-secondary">
+      I'm a merchant
+    </a>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-inner">
+    <div class="trust-item"><div class="trust-dot"></div> No personal number exposed</div>
+    <div class="trust-item"><div class="trust-dot"></div> Powered by Safaricom Daraja API</div>
+    <div class="trust-item"><div class="trust-dot"></div> Real-time STK Push to customer</div>
+    <div class="trust-item"><div class="trust-dot"></div> Full merchant transaction history</div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS — CUSTOMER -->
+<section id="how-it-works" style="background: white;">
+  <div class="section-inner">
+    <div class="split">
+      <div>
+        <div class="section-label">For customers</div>
+        <h2 class="section-title">Pay in seconds, straight from your phone</h2>
+        <p class="section-sub">No card. No bank account. Just your M-Pesa number.</p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>Visit the payment page</h4>
+              <p>Your merchant shares a QuickPay link. Open it on any device.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>Enter your M-Pesa number and amount</h4>
+              <p>Type your Mozambique mobile number and confirm the amount.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>Approve on your phone</h4>
+              <p>An STK Push prompt appears. Enter your M-Pesa PIN and done.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-mock">
+        <div class="mock-header">QuickPay — Secure Payment</div>
+        <div class="mock-field">
+          <div class="mock-label">M-Pesa Phone Number</div>
+          <div class="mock-input">+258 84 123 4567</div>
+        </div>
+        <div class="mock-field">
+          <div class="mock-label">Amount (MZN)</div>
+          <div class="mock-input">500.00</div>
+        </div>
+        <div class="mock-field">
+          <div class="mock-label">Merchant</div>
+          <div class="mock-input">Shop Manica — Ref #A7F2</div>
+        </div>
+        <div class="mock-btn">Pay 500 MZN</div>
+        <div class="mock-status">
+          <div class="mock-status-dot"></div>
+          <span>STK Push sent — check your phone</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS — MERCHANT -->
+<section style="background: var(--gray-light); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="section-inner">
+    <div class="split reverse">
+      <div>
+        <div class="section-label">For merchants</div>
+        <h2 class="section-title">Accept payments. Track every transaction.</h2>
+        <p class="section-sub">Create your free merchant account and start receiving M-Pesa payments immediately.</p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>Create a merchant account</h4>
+              <p>Register with your business email. Takes under a minute.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>Share your payment link not your number</h4>
+              <p>Post your QuickPay link on Instagram or your website. Your personal M-Pesa number stays private.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>Watch transactions come in</h4>
+              <p>Your dashboard updates in real time phone, amount, status, date.</p>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 32px;">
+          <a href="{{ url_for('auth.register_page') }}" class="btn-primary" style="display: inline-flex;">
+            Create merchant account &rarr;
+          </a>
+        </div>
+      </div>
+      <div class="phone-mock">
+        <div class="mock-header">Merchant Dashboard</div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; gap: 12px;">
+          <div style="flex: 1; background: var(--blue-light); border-radius: 10px; padding: 14px;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--blue); margin-bottom: 4px;">TOTAL RECEIVED</div>
+            <div style="font-size: 22px; font-weight: 800; color: var(--blue);">12,400 <span style="font-size: 13px;">MZN</span></div>
+          </div>
+          <div style="flex: 1; background: #f0fdf4; border-radius: 10px; padding: 14px;">
+            <div style="font-size: 11px; font-weight: 600; color: #15803d; margin-bottom: 4px;">TRANSACTIONS</div>
+            <div style="font-size: 22px; font-weight: 800; color: #15803d;">24</div>
+          </div>
+        </div>
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; color: var(--gray); text-transform: uppercase; margin-bottom: 10px;">Recent</div>
+        {% for item in [
+          ('+258 84 111 2222', '500 MZN', 'success'),
+          ('+258 84 333 4444', '1,200 MZN', 'success'),
+          ('+258 85 555 6666', '300 MZN', 'pending')
+        ] %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px;">
+          <span style="color: var(--black); font-weight: 500;">{{ item[0] }}</span>
+          <span style="font-weight: 600;">{{ item[1] }}</span>
+          <span style="padding: 3px 8px; border-radius: 100px; font-size: 11px; font-weight: 600;
+            background: {{ '#f0fdf4' if item[2] == 'success' else '#fffbeb' }};
+            color: {{ '#15803d' if item[2] == 'success' else '#b45309' }};">
+            {{ item[2] }}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES GRID -->
+<section id="features" class="bg-pattern">
+  <div class="section-inner">
+    <div style="text-align: center; margin-bottom: 60px;">
+      <div class="section-label" style="margin-bottom: 12px;">Why QuickPay</div>
+      <h2 class="section-title" style="margin: 0 auto 12px; max-width: 500px; text-align: center;">Everything you need. Nothing you don't.</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Instant STK Push</h3>
+        <p>Payment requests appear directly on the customer's phone via Safaricom's Daraja API. No redirects, no confusion.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>JWT-Secured Accounts</h3>
+        <p>Every session is protected with JSON Web Tokens. Merchant dashboards and customer data stay private.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Real-time Dashboard</h3>
+        <p>Merchants see every transaction the moment it happens phone number, amount, status, and timestamp.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💳</div>
+        <h3>No Bank Account Needed</h3>
+        <p>QuickPay works entirely over M-Pesa. Any customer with a mobile wallet can pay instantly.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🇲🇿</div>
+        <h3>Built for Mozambique</h3>
+        <p>Designed from the ground up for Mozambican merchants and customers. MZN currency. Local phone formats.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h3>Automatic Callback Handling</h3>
+        <p>M-Pesa callbacks are received and processed server-side. Transaction status updates without any manual step.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DUAL CTA -->
+<section class="dual-cta">
+  <div class="section-inner" style="padding: 0; max-width: 100%;">
+    <div class="dual-cta-grid">
+      <div class="cta-panel left">
+        <div class="cta-panel-label">Paying someone?</div>
+        <h2>Pay any merchant with M-Pesa</h2>
+        <p>No account needed. Your merchant shares a QuickPay link you enter your number, approve on your phone, done.</p>
+        <a href="{{ url_for('payments.home') }}" class="btn-outline-dark">Pay now &rarr;</a>
+      </div>
+      <div class="cta-panel right">
+        <div class="cta-panel-label">Accepting payments?</div>
+        <h2>Stop sharing your personal number</h2>
+        <p>Get a merchant account and a payment link. Accept M-Pesa online without exposing your private details.</p>
+        <a href="{{ url_for('auth.register_page') }}" class="btn-white">Create account &rarr;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-copy">© 2025  QuickPay. Graduation Project — Mozambique Payment System.</div>
+    <div class="footer-links">
+      <a href="{{ url_for('auth.login_page') }}">Sign in</a>
+      <a href="{{ url_for('auth.register_page') }}">Register</a>
+      <a href="{{ url_for('payments.home') }}">Pay</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

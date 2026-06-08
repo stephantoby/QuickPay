@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QuickPay — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #1a56db;
+    --blue-dark: #1040b0;
+    --blue-light: rgba(26,86,219,0.12);
+    --black: #080c14;
+    --surface: #0d1220;
+    --surface2: #111827;
+    --white: #ffffff;
+    --gray: rgba(255,255,255,0.45);
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --success-bg: rgba(16,185,129,0.1);
+    --success-border: rgba(16,185,129,0.2);
+    --pending-bg: rgba(245,158,11,0.1);
+    --pending-border: rgba(245,158,11,0.2);
+    --failed-bg: rgba(239,68,68,0.1);
+    --failed-border: rgba(239,68,68,0.2);
+  }
+
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(26,86,219,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,86,219,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 64px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,12,20,0.92);
+    backdrop-filter: blur(20px);
+  }
+  .logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+  .logo-mark {
+    width: 32px; height: 32px; background: var(--blue); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 13px; color: white;
+  }
+  .logo-text { font-size: 17px; font-weight: 700; color: var(--white); letter-spacing: -0.3px; }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .user-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border2);
+    border-radius: 100px; padding: 5px 14px 5px 5px;
+    font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8);
+  }
+  .avatar {
+    width: 28px; height: 28px; background: var(--blue); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+  }
+  .btn-logout {
+    background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+    color: #fca5a5; padding: 7px 16px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; font-family: 'Inter', sans-serif;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .btn-logout:hover { background: rgba(239,68,68,0.15); }
+
+  /* TABS */
+  .tab-bar {
+    position: relative; z-index: 1;
+    display: flex; border-bottom: 1px solid var(--border);
+    padding: 0 40px; background: rgba(8,12,20,0.6);
+  }
+  .tab-btn {
+    padding: 14px 20px; font-size: 14px; font-weight: 500; color: var(--gray);
+    background: none; border: none; border-bottom: 2px solid transparent;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+    transition: color 0.15s, border-color 0.15s; margin-bottom: -1px;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .tab-btn:hover { color: rgba(255,255,255,0.8); }
+  .tab-btn.active { color: var(--white); border-bottom-color: var(--blue); font-weight: 600; }
+
+  /* MAIN */
+  main { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 36px 40px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .page-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 28px; flex-wrap: wrap; gap: 16px;
+  }
+  .page-title { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .page-sub { font-size: 14px; color: var(--gray); }
+
+  .btn-export {
+    display: flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border2);
+    color: rgba(255,255,255,0.7); padding: 9px 18px; border-radius: 9px;
+    font-size: 13px; font-weight: 600; font-family: 'Inter', sans-serif;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .btn-export:hover { background: rgba(255,255,255,0.09); color: white; }
+
+  /* STATS */
+  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 16px; }
+  .stats-row-2 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px; position: relative; overflow: hidden; transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--border2); }
+  .stat-card::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; opacity: 0; transition: opacity 0.2s;
+  }
+  .stat-card:hover::after { opacity: 1; }
+  .stat-card.blue::after { background: var(--blue); }
+  .stat-card.green::after { background: #10b981; }
+  .stat-card.yellow::after { background: #f59e0b; }
+  .stat-card.teal::after { background: #06b6d4; }
+  .stat-card.purple::after { background: #8b5cf6; }
+  .stat-card.red::after { background: #ef4444; }
+  .stat-label { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--gray); margin-bottom: 12px; }
+  .stat-value { font-size: 28px; font-weight: 800; letter-spacing: -1px; line-height: 1; margin-bottom: 6px; }
+  .stat-value.blue { color: #6b9fff; }
+  .stat-value.green { color: #6ee7b7; }
+  .stat-value.yellow { color: #fcd34d; }
+  .stat-value.teal { color: #67e8f9; }
+  .stat-value.purple { color: #c4b5fd; }
+  .stat-value.red { color: #fca5a5; }
+  .stat-sub { font-size: 12px; color: var(--gray); }
+  .stat-icon { position: absolute; top: 20px; right: 20px; font-size: 22px; opacity: 0.2; }
+
+  /* CHART */
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 24px; }
+  .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .chart-title { font-size: 15px; font-weight: 700; }
+  .chart-sub { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .chart-wrap { position: relative; height: 180px; }
+
+  /* FILTERS */
+  .filters { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-input {
+    background: var(--surface); border: 1px solid var(--border2); color: var(--white);
+    padding: 9px 14px; border-radius: 9px; font-size: 13px; font-family: 'Inter', sans-serif;
+    outline: none; transition: border-color 0.15s;
+  }
+  .filter-input:focus { border-color: var(--blue); }
+  .filter-input::placeholder { color: rgba(255,255,255,0.25); }
+  .filter-input option { background: var(--surface2); }
+  .btn-filter {
+    background: var(--blue); border: none; color: white; padding: 9px 18px; border-radius: 9px;
+    font-size: 13px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-filter:hover { background: var(--blue-dark); }
+  .btn-clear {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border2); color: var(--gray);
+    padding: 9px 14px; border-radius: 9px; font-size: 13px; font-family: 'Inter', sans-serif;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .btn-clear:hover { color: white; }
+
+  /* TABLE */
+  .table-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .table-header {
+    padding: 18px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .table-title { font-size: 15px; font-weight: 700; }
+  .table-count { background: var(--blue-light); color: #6b9fff; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 100px; margin-left: 10px; }
+  .btn-refresh {
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border2); color: var(--gray);
+    padding: 7px 14px; border-radius: 8px; font-size: 13px; font-family: 'Inter', sans-serif;
+    cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px;
+  }
+  .btn-refresh:hover { color: white; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    padding: 11px 20px; text-align: left; font-size: 11px; font-weight: 600;
+    color: rgba(255,255,255,0.3); letter-spacing: 0.8px; text-transform: uppercase;
+    background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border);
+  }
+  tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.025); }
+  tbody td { padding: 14px 20px; font-size: 13px; color: rgba(255,255,255,0.75); }
+  .tx-id { font-family: monospace; font-size: 11px; color: rgba(255,255,255,0.35); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .amount-cell { font-weight: 700; color: var(--white); font-size: 14px; }
+  .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
+  .status-badge.success { background: var(--success-bg); color: #6ee7b7; border: 1px solid var(--success-border); }
+  .status-badge.pending { background: var(--pending-bg); color: #fcd34d; border: 1px solid var(--pending-border); }
+  .status-badge.failed  { background: var(--failed-bg);  color: #fca5a5; border: 1px solid var(--failed-border); }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+  /* EMPTY / LOADING */
+  .empty-state, .loading-state { text-align: center; padding: 56px 24px; color: var(--gray); }
+  .empty-icon { font-size: 36px; margin-bottom: 12px; }
+  .empty-title { font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+  .empty-sub { font-size: 13px; }
+  .spinner { width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.08); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* PROFILE */
+  .profile-wrap { max-width: 600px; }
+  .profile-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin-bottom: 16px; }
+  .profile-card-title { font-size: 15px; font-weight: 700; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .profile-avatar-row { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .profile-avatar { width: 56px; height: 56px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; }
+  .profile-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .profile-role { font-size: 12px; font-weight: 600; color: #6b9fff; background: var(--blue-light); display: inline-block; padding: 2px 10px; border-radius: 100px; }
+  .profile-field { margin-bottom: 16px; }
+  .profile-label { font-size: 12px; font-weight: 600; color: var(--gray); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .profile-value { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.04); border: 1px solid var(--border2); border-radius: 9px; padding: 11px 14px; }
+  .profile-note { font-size: 12px; color: var(--gray); margin-top: 5px; }
+
+  @media (max-width: 900px) {
+    .stats-row, .stats-row-2 { grid-template-columns: 1fr 1fr; }
+    main { padding: 24px 20px; }
+    nav, .tab-bar { padding-left: 20px; padding-right: 20px; }
+  }
+  @media (max-width: 600px) {
+    .stats-row, .stats-row-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-mark">QP</div>
+    <span class="logo-text">QuickPay</span>
+  </a>
+  <div class="nav-right">
+    <div class="user-badge">
+      <div class="avatar" id="userAvatar">M</div>
+      <span id="userName">Merchant</span>
+    </div>
+    <button class="btn-logout" onclick="logout()">Sign out</button>
+  </div>
+</nav>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('overview',this)">📊 Overview</button>
+  <button class="tab-btn" onclick="switchTab('transactions',this)">💳 Transactions</button>
+  <button class="tab-btn" onclick="switchTab('profile',this)">👤 Profile</button>
+</div>
+
+<main>
+
+  <!-- OVERVIEW -->
+  <div class="tab-panel active" id="tab-overview">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-sub" id="welcomeMsg">Loading your data...</p>
+      </div>
+      <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card blue">
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-value blue" id="statRevenue">—</div>
+        <div class="stat-sub">MZN all time</div>
+        <div class="stat-icon">💰</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Successful Payments</div>
+        <div class="stat-value green" id="statSuccess">—</div>
+        <div class="stat-sub" id="statSuccessRate">0% success rate</div>
+        <div class="stat-icon">✅</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-label">Total Transactions</div>
+        <div class="stat-value yellow" id="statTotal">—</div>
+        <div class="stat-sub" id="statPending">0 pending</div>
+        <div class="stat-icon">📊</div>
+      </div>
+    </div>
+
+    <div class="stats-row-2">
+      <div class="stat-card teal">
+        <div class="stat-label">Today's Revenue</div>
+        <div class="stat-value teal" id="statToday">—</div>
+        <div class="stat-sub">MZN today</div>
+        <div class="stat-icon">📅</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-label">This Week's Revenue</div>
+        <div class="stat-value purple" id="statWeek">—</div>
+        <div class="stat-sub">MZN this week</div>
+        <div class="stat-icon">📆</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">Failed Transactions</div>
+        <div class="stat-value red" id="statFailed">—</div>
+        <div class="stat-sub">payments failed</div>
+        <div class="stat-icon">❌</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Revenue — Last 7 Days</div>
+          <div class="chart-sub">Daily M-Pesa payments received (MZN)</div>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="revenueChart"></canvas>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <div style="display:flex;align-items:center;">
+          <span class="table-title">Recent Transactions</span>
+          <span class="table-count" id="recentCount">0</span>
+        </div>
+        <button class="btn-refresh" onclick="loadDashboard()">↻ Refresh</button>
+      </div>
+      <div id="recentBody"><div class="loading-state"><div class="spinner"></div>Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- TRANSACTIONS -->
+  <div class="tab-panel" id="tab-transactions">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Transactions</h1>
+        <p class="page-sub">Search, filter and export your payment history</p>
+      </div>
+      <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+    </div>
+    <div class="filters">
+      <input type="date" class="filter-input" id="filterFrom"/>
+      <input type="date" class="filter-input" id="filterTo"/>
+      <select class="filter-input" id="filterStatus">
+        <option value="">All statuses</option>
+        <option value="success">Success</option>
+        <option value="pending">Pending</option>
+        <option value="failed">Failed</option>
+      </select>
+      <input type="text" class="filter-input" id="filterPhone" placeholder="Search by phone..."/>
+      <button class="btn-filter" onclick="applyFilters()">Apply</button>
+      <button class="btn-clear" onclick="clearFilters()">Clear</button>
+    </div>
+    <div class="table-card">
+      <div class="table-header">
+        <div style="display:flex;align-items:center;">
+          <span class="table-title">All Transactions</span>
+          <span class="table-count" id="allCount">0</span>
+        </div>
+        <button class="btn-refresh" onclick="loadDashboard()">↻ Refresh</button>
+      </div>
+      <div id="allBody"><div class="loading-state"><div class="spinner"></div>Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="tab-panel" id="tab-profile">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Profile</h1>
+        <p class="page-sub">Your merchant account details</p>
+      </div>
+    </div>
+    <div class="profile-wrap">
+      <div class="profile-card">
+        <div class="profile-avatar-row">
+          <div class="profile-avatar" id="profileAvatar">M</div>
+          <div>
+            <div class="profile-name" id="profileName">—</div>
+            <div class="profile-role">Merchant</div>
+          </div>
+        </div>
+        <div class="profile-field">
+          <div class="profile-label">Full Name</div>
+          <div class="profile-value" id="profileNameVal">—</div>
+        </div>
+        <div class="profile-field">
+          <div class="profile-label">Email Address</div>
+          <div class="profile-value" id="profileEmail">—</div>
+          <div class="profile-note">Email cannot be changed</div>
+        </div>
+        <div class="profile-field">
+          <div class="profile-label">M-Pesa Phone</div>
+          <div class="profile-value" id="profilePhone">—</div>
+        </div>
+        <div class="profile-field">
+           <div class="profile-label">Your Payment Link</div>
+           <div style="display:flex; gap:10px; align-items:center;">
+            <div class="profile-value" id="paymentLink" style="flex:1; font-size:13px; word-break:break-all;">—</div>
+            <button onclick="copyLink()" style="background:var(--blue); border:none; color:white; padding:11px 16px; border-radius:9px; font-size:13px; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer; white-space:nowrap;">
+              Copy
+            </button>
+  </div>
+  <div class="profile-note">Share this link with your customers to receive payments</div>
+</div>
+      </div>
+      <div class="profile-card">
+        <div class="profile-card-title">Account Stats</div>
+        <div class="profile-field">
+          <div class="profile-label">Total Transactions</div>
+          <div class="profile-value" id="profileTxCount">—</div>
+        </div>
+        <div class="profile-field">
+          <div class="profile-label">Total Revenue</div>
+          <div class="profile-value" id="profileRevenue">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (!token) window.location.href = '/api/auth/login-page';
+
+  if (user.role === 'Customer') {
+    showCustomerDashboard();
+  } else {
+    loadDashboard();
+  }
+
+  if (user.name) {
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+    
+
+    if (user.role !== 'Customer') {
+      document.getElementById('profileName').textContent = user.name;
+      document.getElementById('profileNameVal').textContent = user.name;
+      document.getElementById('profileAvatar').textContent = user.name.charAt(0).toUpperCase();
+      if (user.email) document.getElementById('profileEmail').textContent = user.email;
+      if (user.phone) document.getElementById('profilePhone').textContent = user.phone;
+      const merchantLink = `${window.location.origin}/api/payments/?merchant_id=${user.id}`;
+      document.getElementById('paymentLink').textContent = merchantLink;
+  }
+   function copyLink() {
+         const link = document.getElementById('paymentLink').textContent;
+         navigator.clipboard.writeText(link);
+         const btn = event.target;
+         btn.textContent = 'Copied!';
+         setTimeout(() => btn.textContent = 'Copy', 2000);
+        }
+}
+
+  let allTransactions = [];
+  let revenueChart = null;
+
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  async function loadDashboard() {
+    try {
+      const res = await fetch('/api/auth/dashboard', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (res.status === 401) { logout(); return; }
+      const data = await res.json();
+      allTransactions = data.transactions || [];
+      renderStats(data);
+      renderChart(allTransactions);
+      renderTable(allTransactions, 'recentBody', 10);
+      renderTable(allTransactions, 'allBody');
+      document.getElementById('recentCount').textContent = Math.min(allTransactions.length, 10);
+      document.getElementById('allCount').textContent = allTransactions.length;
+
+      const totalRev = allTransactions.filter(t => t.status === 'success').reduce((s,t) => s + parseFloat(t.amount), 0);
+      document.getElementById('profileTxCount').textContent = data.total_transactions;
+      document.getElementById('profileRevenue').textContent = 'MZN ' + totalRev.toLocaleString('en-US', {minimumFractionDigits:2});
+    } catch(err) {
+      ['recentBody','allBody'].forEach(id => {
+        document.getElementById(id).innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Connection Error</div><div class="empty-sub">Could not load data.</div></div>`;
+      });
+    }
+  }
+
+  function renderStats(data) {
+    const txs = data.transactions || [];
+    const success = txs.filter(t => t.status === 'success');
+    const pending = txs.filter(t => t.status === 'pending');
+    const failed  = txs.filter(t => t.status === 'failed');
+    const totalRev = success.reduce((s,t) => s + parseFloat(t.amount), 0);
+    const rate = txs.length ? Math.round((success.length / txs.length) * 100) : 0;
+    const today = new Date().toISOString().slice(0,10);
+    const todayRev = success.filter(t => t.created_at.startsWith(today)).reduce((s,t) => s + parseFloat(t.amount), 0);
+    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+    const weekRev = success.filter(t => new Date(t.created_at) >= weekAgo).reduce((s,t) => s + parseFloat(t.amount), 0);
+
+    document.getElementById('statRevenue').textContent = 'MZN ' + totalRev.toLocaleString('en-US', {minimumFractionDigits:2});
+    document.getElementById('statSuccess').textContent = success.length;
+    document.getElementById('statSuccessRate').textContent = rate + '% success rate';
+    document.getElementById('statTotal').textContent = data.total_transactions;
+    document.getElementById('statPending').textContent = pending.length + ' pending';
+    document.getElementById('statToday').textContent = 'MZN ' + todayRev.toLocaleString('en-US', {minimumFractionDigits:2});
+    document.getElementById('statWeek').textContent = 'MZN ' + weekRev.toLocaleString('en-US', {minimumFractionDigits:2});
+    document.getElementById('statFailed').textContent = failed.length;
+  }
+
+  function renderChart(txs) {
+    const labels = [], values = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().slice(0,10);
+      labels.push(d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'}));
+      values.push(txs.filter(t => t.status === 'success' && t.created_at.startsWith(dateStr)).reduce((s,t) => s + parseFloat(t.amount), 0));
+    }
+    if (revenueChart) revenueChart.destroy();
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    const gradient = ctx.createLinearGradient(0,0,0,180);
+    gradient.addColorStop(0, 'rgba(26,86,219,0.35)');
+    gradient.addColorStop(1, 'rgba(26,86,219,0)');
+    revenueChart = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets: [{ label: 'Revenue (MZN)', data: values, borderColor: '#1a56db', backgroundColor: gradient, borderWidth: 2.5, pointBackgroundColor: '#1a56db', pointBorderColor: '#080c14', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6, fill: true, tension: 0.4 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { backgroundColor: '#111827', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleColor: 'rgba(255,255,255,0.6)', bodyColor: '#ffffff', bodyFont: { family: 'Inter', weight: '600' }, callbacks: { label: ctx => ' MZN ' + ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits:2}) } }
+        },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.35)', font: { family: 'Inter', size: 11 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.35)', font: { family: 'Inter', size: 11 }, callback: v => 'MZN ' + v.toLocaleString() }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  function renderTable(txs, containerId, limit = null) {
+    const data = limit ? txs.slice(0, limit) : txs;
+    if (!data.length) {
+      document.getElementById(containerId).innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No transactions yet</div><div class="empty-sub">Transactions appear here once customers pay.</div></div>`;
+      return;
+    }
+    const rows = data.map(t => `
+      <tr>
+        <td><div class="tx-id" title="${t.transaction_id}">${t.transaction_id}</div></td>
+        <td>${t.customer_phone}</td>
+        <td><span class="amount-cell">MZN ${parseFloat(t.amount).toLocaleString('en-US', {minimumFractionDigits:2})}</span></td>
+        <td><span class="status-badge ${t.status}"><span class="status-dot"></span>${t.status}</span></td>
+        <td style="color:rgba(255,255,255,0.35);font-size:12px;">${t.created_at}</td>
+      </tr>`).join('');
+    document.getElementById(containerId).innerHTML = `<table><thead><tr><th>Transaction ID</th><th>Customer Phone</th><th>Amount</th><th>Status</th><th>Date & Time</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  function applyFilters() {
+    let filtered = [...allTransactions];
+    const from = document.getElementById('filterFrom').value;
+    const to   = document.getElementById('filterTo').value;
+    const status = document.getElementById('filterStatus').value;
+    const phone  = document.getElementById('filterPhone').value.trim().toLowerCase();
+    if (from)   filtered = filtered.filter(t => t.created_at >= from);
+    if (to)     filtered = filtered.filter(t => t.created_at <= to + ' 23:59:59');
+    if (status) filtered = filtered.filter(t => t.status === status);
+    if (phone)  filtered = filtered.filter(t => t.customer_phone.toLowerCase().includes(phone));
+    renderTable(filtered, 'allBody');
+    document.getElementById('allCount').textContent = filtered.length;
+  }
+
+  function clearFilters() {
+    ['filterFrom','filterTo','filterPhone'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('filterStatus').value = '';
+    renderTable(allTransactions, 'allBody');
+    document.getElementById('allCount').textContent = allTransactions.length;
+  }
+
+  function exportCSV() {
+    if (!allTransactions.length) { alert('No transactions to export.'); return; }
+    const headers = ['Transaction ID','Customer Phone','Amount (MZN)','Status','Date & Time'];
+    const rows = allTransactions.map(t => [t.transaction_id, t.customer_phone, t.amount, t.status, t.created_at]);
+    const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'quickpay-transactions.csv'; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/api/auth/login-page';
+  }
+
+  async function showCustomerDashboard() {
+  // Hide merchant UI, show customer UI
+  document.getElementById('tab-overview').innerHTML = `
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">My Payments</h1>
+        <p class="page-sub" id="customerWelcome">Loading your payment history..</p>
+      </div>
+      <a href= "/api/payments/" style="display:inline-flex; align-items:center; gap:8px; background:#1a56db; color:white; font-size:14px; font-weight:600; padding:11px 22px; border-radius:10px; text-decoration:none; transition:background 0.15s;" onmouseover="this.style.background='#1040b0'" onmouseout="this.style.background='#1a56db'">
+         Make a Payment
+      </a>  
+    </div>
+    <div class="stats-row" style="grid-template-columns: repeat(3,1fr); margin-bottom: 28px;">
+      <div class="stat-card blue">
+        <div class="stat-label">Total Spent</div>
+        <div class="stat-value blue" id="cStatSpent">—</div>
+        <div class="stat-sub">MZN all time</div>
+        <div class="stat-icon">💸</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Successful Payments</div>
+        <div class="stat-value green" id="cStatSuccess">—</div>
+        <div class="stat-sub" id="cStatRate">0% success rate</div>
+        <div class="stat-icon">✅</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-label">Total Transactions</div>
+        <div class="stat-value yellow" id="cStatTotal">—</div>
+        <div class="stat-sub" id="cStatPending">0 pending</div>
+        <div class="stat-icon">📊</div>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-header">
+        <div style="display:flex;align-items:center;">
+          <span class="table-title">Payment History</span>
+          <span class="table-count" id="cTxCount">0</span>
+        </div>
+        <button class="btn-refresh" onclick="showCustomerDashboard()">↻ Refresh</button>
+      </div>
+      <div id="cTableBody">
+        <div class="loading-state"><div class="spinner"></div>Loading...</div>
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('tab-profile').innerHTML = `
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">My Profile</h1>
+      <p class="page-sub">Your customer account details</p>
+    </div>
+  </div>
+  <div class="profile-wrap">
+    <div class="profile-card">
+      <div class="profile-avatar-row">
+        <div class="profile-avatar">${user.name.charAt(0).toUpperCase()}</div>
+        <div>
+          <div class="profile-name">${user.name}</div>
+          <div class="profile-role" style="color:#6ee7b7;background:rgba(16,185,129,0.1);">Customer</div>
+        </div>
+      </div>
+      <div class="profile-field">
+        <div class="profile-label">Full Name</div>
+        <div class="profile-value">${user.name}</div>
+      </div>
+      <div class="profile-field">
+        <div class="profile-label">Email Address</div>
+        <div class="profile-value">${user.email || '—'}</div>
+        <div class="profile-note">Email cannot be changed</div>
+      </div>
+      <div class="profile-field">
+        <div class="profile-label">M-Pesa Phone</div>
+        <div class="profile-value">${user.phone || '—'}</div>
+      </div>
+      <div class="profile-field">
+        <div class="profile-label">National ID (BI Number)</div>
+        <div style="display:flex; gap:10px;">
+          <input 
+            type="text" 
+            id="biInput"
+            placeholder="Enter your BI number"
+            style="flex:1; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); color:white; padding:11px 14px; border-radius:9px; font-size:14px; font-family:'Inter',sans-serif; outline:none;"
+          />
+          <button onclick="saveBI()" style="background:#1a56db; border:none; color:white; padding:11px 20px; border-radius:9px; font-size:13px; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer;">
+            Save
+          </button>
+        </div>
+        <div id="biMsg" style="font-size:12px; margin-top:6px;"></div>
+      </div>
+      <div class="profile-field">
+        <div class="profile-label">Account ID</div>
+        <div class="profile-value">#${user.id}</div>
+      </div>
+    </div>
+  </div>
+`;
+
+  // Hide transactions and profile tabs — not needed for customers
+  document.querySelector('[onclick="switchTab(\'transactions\',this)"]').style.display = 'none';
+
+  try {
+    const res = await fetch('/api/auth/customer-dashboard', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (res.status === 401) { logout(); return; }
+    const data = await res.json();
+    const txs = data.transactions || [];
+
+    if (user.name) {
+      document.getElementById('userName').textContent = user.name;
+      document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+      document.getElementById('customerWelcome').textContent = `Welcome back, ${user.name}. Here are your payments.`;
+    }
+
+    // Stats
+    const success = txs.filter(t => t.status === 'success');
+    const pending = txs.filter(t => t.status === 'pending');
+    const totalSpent = success.reduce((s,t) => s + parseFloat(t.amount), 0);
+    const rate = txs.length ? Math.round((success.length / txs.length) * 100) : 0;
+
+    document.getElementById('cStatSpent').textContent = 'MZN ' + totalSpent.toLocaleString('en-US', {minimumFractionDigits:2});
+    document.getElementById('cStatSuccess').textContent = success.length;
+    document.getElementById('cStatRate').textContent = rate + '% success rate';
+    document.getElementById('cStatTotal').textContent = data.total_transactions;
+    document.getElementById('cStatPending').textContent = pending.length + ' pending';
+    document.getElementById('cTxCount').textContent = txs.length;
+
+    // Table
+    if (!txs.length) {
+      document.getElementById('cTableBody').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <div class="empty-title">No payments yet</div>
+          <div class="empty-sub">Your payment history will appear here.</div>
+        </div>`;
+      return;
+    }
+
+    const rows = txs.map(t => `
+      <tr>
+        <td><div class="tx-id" title="${t.transaction_id}">${t.transaction_id}</div></td>
+        <td>${t.customer_phone}</td>
+        <td><span class="amount-cell">MZN ${parseFloat(t.amount).toLocaleString('en-US', {minimumFractionDigits:2})}</span></td>
+        <td><span class="status-badge ${t.status}"><span class="status-dot"></span>${t.status}</span></td>
+        <td style="color:rgba(255,255,255,0.35);font-size:12px;">${t.created_at}</td>
+      </tr>`).join('');
+
+    document.getElementById('cTableBody').innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Transaction ID</th>
+            <th>Phone Used</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date & Time</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+
+  } catch(err) {
+    document.getElementById('cTableBody').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-title">Connection Error</div>
+        <div class="empty-sub">Could not load payment history.</div>
+      </div>`;
+  }
+   
+} async function saveBI() {
+  const bi = document.getElementById('biInput').value.trim();
+  const msg = document.getElementById('biMsg');
+
+  if (!bi) {
+    msg.style.color = '#fca5a5';
+    msg.textContent = 'Please enter your BI number.';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/auth/update-bi', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ bi_number: bi })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      msg.style.color = '#6ee7b7';
+      msg.textContent = '✓ BI number saved successfully.';
+    } else {
+      msg.style.color = '#fca5a5';
+      msg.textContent = 'Error: ' + data.error;
+    }
+  } catch(err) {
+    msg.style.color = '#fca5a5';
+    msg.textContent = 'Something went wrong. Try again.';
+  }
+}
+</script>
+</body>
+</html>

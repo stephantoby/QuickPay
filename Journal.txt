@@ -1,0 +1,101 @@
+8/02/2026
+I just setup the project repo and created the initial flask app structure and 
+committed the first working version to the remote repo.
+
+16/02/2026
+I worked on the payment template by creating a form for both phone number and amount 
+and also setup a flask route for the pay button function.
+
+From 17/02/2026 to 20/02/2026
+I went back to reconstructing my project layout and i found my first bug. The /pay route
+in app.py was defined under the defualt flask setup which caused it to be unreachable. From 
+there i learned factory pattern.    
+
+I also learned what blueprints are and created them for /pay, /status, and /callback
+routes. When error checking the form inputs i ran into typeerrors and valueerrors which 
+led me to learn error handling with try and except. I also had a bug where my config class was 
+lowercase which caused an importerror.
+
+I setup extentions.py to initilize needed flask extentions seperate from the app to avoid 
+circular imports and created .env to store database credentials and api keys safely.
+I learned that secrets should never be committed to version control.
+
+From 21/02/2026 to 24/02/2026
+Created models.py inside the app folder. I learned that model is a Python class that represents a 
+database table each attribute in the class becomes a column in mysql. I made three models, 
+Users- This is to store people's info
+Transactions- This is to store every payment attempt
+Mpesa_callback- This is to store the api response as evidence of transactions.
+Learned about column property Enum which restricts a column to specific values to avoid typos.
+
+26/02/2026 to 06/03/2026
+I setup ngrok to expose my local flask server to the internet. I did this beacause Mpesa api will have to
+process payments and send the result to my app and it cant do that beacause it cant reach the localhost.
+Ngrok creates a public url that tunnels directly to my local address. 
+
+Built mpesa.py with two functions one to authenticate with safaricom and get an access token and the other
+one to trigger STK push. I learned about base64 encoding and why safaricom requires a timestamp in the password.
+
+Updated routes.py to save transactions to mysql before calling mpesa then collect and save the 
+checkoutrequestid from mpesa response. This ID is how the callbacks matches to the right transaction.
+
+I encountered a typo in the timestamp format i also used the wrong ngrok domain which caused a timeout 
+any time my app tried to communicate with mpesa. I fixed these problems by retracing my steps and through 
+debugging print statements. 
+
+I confimed the full transaction flow works by testing directly on daraja portal which returned success. 
+Sandbox instability caused 503 errors and for this i added retry logic to handle it.
+
+07/03/2026 to 10/03/2026
+Built the auth blueprint which uses two routes, registrion and login. Registration creates an account
+by taking the user's details, hashes the password and saves everything to the users table. I 
+made sure passwords arent stored as plain text for safety purpose.
+
+Login checks the email in the database, i use check_password_hash to verify the password. I learned hashing 
+is one way and cant be reversed so instead of unhashing the stored password i just hash the input again and 
+compare the two results.
+
+After login succeceds the server generates a JWT token. This token contains the user's ID signed with a 
+secret key.
+
+Without a valid token flask returns 401 unauthorized automatically. Tested eveything using postman 
+
+12/03/2026 to 19/03/2026
+
+I built the dashboard route inside the auth blueprint. It is a protected route meaning only requests with
+a valid Jwt token can access it. Used jwt functions @jwt_required() to enforce get_jwt_identity() to extract
+the users id from the token.
+
+Added a role check if the user is not a merchant the rout returns 403 access denined. This prevents customers
+from checking merchant data.
+
+For this i queried the transactions table filtering by merchant_id to get only that merchant's transactions
+So this returns the merchant's name, total transaction count and full transaction history as JSON.
+
+The bugs i came accross came from filtering the transaction table instead of placing .all() after filter_by 
+it was placed inside the int type cast which caused an attribute error 
+I tested using postman.
+
+The system at this point has no way of identifying what merchant is receiving the payment and the transaction
+table merchant_id column isnt collecting any data. So i updated the payment.html file to include merchant_id 
+and updated the /pay route to read merchant_id from the payment page and pass it when creating a new transaction.
+
+
+14/04/2026 to 23/04/2026
+
+Built the payment page using. I chose a dark blue, white and black color pattern which was inspired by Paysuite 
+(a payment platform from moz). Used google fonts to load two custom fonts, Syne for headings and DM sans for the 
+body text. 
+
+The background has two effects created using ::before and ::after pseudo elements a subtle blue grid pattern 
+made with two layered linear gradients, and a blue glow blob at the top using a radial gradient.
+The navbar uses flex display with justify-content: space-between to push the logo left and the nav links right. 
+The Merchant Login button has a blue background and smooth hover transition.
+
+The form has two inputs, phone number and amount each with an icon positioned absolutely inside a 
+relative wrapper. Inputs change border color on focus using input:focus. A hidden field carries the merchant ID silently.
+The JavaScript intercepts the form submission using addEventListener, prevents the default browser behaviour with 
+e.preventDefault(), and sends the data to Flask using fetch() without refreshing the page
+
+24/04/2026 to 
+

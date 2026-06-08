@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QuickPay — Forgot Password</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #1a56db;
+    --blue-dark: #1040b0;
+    --blue-light: #e8f0fe;
+    --black: #0d0d0d;
+    --gray: #6b7280;
+    --border: #e5e7eb;
+    --white: #ffffff;
+  }
+
+  html, body { height: 100%; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+
+  /* LEFT */
+  .form-panel {
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: center; padding: 60px 48px; background: var(--blue-light);
+  }
+  .form-box { width: 100%; max-width: 400px; }
+
+  .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; text-decoration: none; }
+  .logo-mark {
+    width: 36px; height: 36px; background: var(--blue); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 800; font-size: 14px;
+  }
+  .logo-text { font-size: 18px; font-weight: 700; color: var(--black); letter-spacing: -0.3px; }
+
+  .form-title { font-size: 1.75rem; font-weight: 800; color: var(--black); letter-spacing: -0.5px; margin-bottom: 8px; }
+  .form-sub { font-size: 14px; color: var(--gray); margin-bottom: 32px; line-height: 1.6; }
+
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; color: var(--black); margin-bottom: 7px; }
+  .input-wrap { position: relative; display: flex; align-items: center; }
+  .input-icon { position: absolute; left: 14px; color: var(--gray); font-size: 15px; pointer-events: none; }
+  .input-wrap input {
+    width: 100%; padding: 12px 14px 12px 40px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    font-size: 14px; font-family: 'Inter', sans-serif;
+    color: var(--black); background: var(--white); outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .input-wrap input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,219,0.1); }
+  .input-wrap input::placeholder { color: #adb5bd; }
+
+  .btn-submit {
+    width: 100%; padding: 13px; background: var(--blue); color: white;
+    font-size: 15px; font-weight: 700; font-family: 'Inter', sans-serif;
+    border: none; border-radius: 10px; cursor: pointer;
+    transition: background 0.15s, transform 0.1s; margin-bottom: 24px;
+  }
+  .btn-submit:hover { background: var(--blue-dark); transform: translateY(-1px); }
+  .btn-submit.loading { opacity: 0.7; pointer-events: none; }
+
+  /* ALERT */
+  .alert {
+    display: none; padding: 12px 16px; border-radius: 10px;
+    font-size: 13px; font-weight: 500; margin-bottom: 20px;
+    gap: 8px; align-items: flex-start;
+  }
+  .alert.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+  .alert.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+
+  /* TEMP PASSWORD BOX */
+  .temp-box {
+    display: none;
+    background: #f0fdf4; border: 1.5px solid #86efac;
+    border-radius: 12px; padding: 20px; margin-bottom: 20px;
+    text-align: center;
+  }
+  .temp-box-label { font-size: 12px; font-weight: 600; color: #15803d; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+  .temp-password {
+    font-size: 28px; font-weight: 800; letter-spacing: 4px;
+    color: #15803d; font-family: monospace; margin-bottom: 10px;
+  }
+  .temp-note { font-size: 12px; color: #166534; line-height: 1.5; }
+
+  .form-footer { text-align: center; font-size: 14px; color: var(--gray); }
+  .form-footer a { color: var(--blue); font-weight: 600; text-decoration: none; }
+  .form-footer a:hover { text-decoration: underline; }
+
+  /* RIGHT */
+  .brand-panel {
+    background: linear-gradient(160deg, #1a56db 0%, #1040b0 100%);
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: center; padding: 60px 64px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .brand-panel::before {
+    content: ''; position: absolute; top: -80px; right: -80px;
+    width: 320px; height: 320px; background: rgba(255,255,255,0.05);
+    border-radius: 50%; pointer-events: none;
+  }
+  .brand-panel::after {
+    content: ''; position: absolute; bottom: -100px; left: -60px;
+    width: 400px; height: 400px; background: rgba(255,255,255,0.04);
+    border-radius: 50%; pointer-events: none;
+  }
+  .brand-content { position: relative; z-index: 1; }
+  .brand-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.15); color: white;
+    font-size: 12px; font-weight: 600; padding: 6px 14px;
+    border-radius: 100px; margin-bottom: 32px; letter-spacing: 0.3px;
+  }
+  .brand-title {
+    font-size: clamp(1.6rem, 2.5vw, 2.2rem); font-weight: 800;
+    color: white; letter-spacing: -0.8px; line-height: 1.2; margin-bottom: 16px;
+  }
+  .brand-sub {
+    font-size: 15px; color: rgba(255,255,255,0.75);
+    line-height: 1.7; max-width: 340px; margin: 0 auto 48px;
+  }
+  .brand-features { display: flex; flex-direction: column; gap: 16px; text-align: left; }
+  .brand-feature { display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 500; }
+  .brand-feature-icon {
+    width: 32px; height: 32px; background: rgba(255,255,255,0.15);
+    border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; font-size: 14px; flex-shrink: 0;
+  }
+
+  @media (max-width: 768px) {
+    .split { grid-template-columns: 1fr; }
+    .brand-panel { display: none; }
+    .form-panel { padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="split">
+
+  <!-- LEFT: FORM -->
+  <div class="form-panel">
+    <div class="form-box">
+
+      <a href="{{ url_for('root') }}" class="logo">
+        <div class="logo-mark">QP</div>
+        <span class="logo-text">QuickPay</span>
+      </a>
+
+      <h1 class="form-title">Reset your password</h1>
+      <p class="form-sub">Enter your registered M-Pesa phone number and we'll generate a temporary password for you.</p>
+
+      <div class="alert error" id="errorAlert">
+        <span>⚠ </span><span id="errorMsg">Something went wrong.</span>
+      </div>
+
+      <!-- TEMP PASSWORD DISPLAY -->
+      <div class="temp-box" id="tempBox">
+        <div class="temp-box-label">Your temporary password</div>
+        <div class="temp-password" id="tempPassword">——————</div>
+        <div class="temp-note">⚠ Save this password now. Use it to sign in, then change your password from your profile.</div>
+      </div>
+
+      <div id="formFields">
+        <div class="field">
+          <label for="phone">M-Pesa Phone Number</label>
+          <div class="input-wrap">
+            <span class="input-icon">📱</span>
+            <input type="text" id="phone" placeholder="258840000000"/>
+          </div>
+        </div>
+
+        <button class="btn-submit" onclick="handleReset()" id="submitBtn">Generate temporary password</button>
+      </div>
+
+      <p class="form-footer">
+        Remembered it? <a href="{{ url_for('auth.login_page') }}">Sign in</a>
+      </p>
+
+    </div>
+  </div>
+
+  <!-- RIGHT: BRAND -->
+  <div class="brand-panel">
+    <div class="brand-content">
+      <div class="brand-badge">🔐 Account Security</div>
+      <h2 class="brand-title">Locked out? We've got you.</h2>
+      <p class="brand-sub">
+        Enter your registered phone number and we'll generate a temporary password so you can get back in immediately.
+      </p>
+      <div class="brand-features">
+        <div class="brand-feature">
+          <div class="brand-feature-icon">📱</div>
+          Verified by your M-Pesa number
+        </div>
+        <div class="brand-feature">
+          <div class="brand-feature-icon">⚡</div>
+          Instant temporary password
+        </div>
+        <div class="brand-feature">
+          <div class="brand-feature-icon">🔒</div>
+          Your account stays secure
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  async function handleReset() {
+    const phone = document.getElementById('phone').value.trim();
+    const btn = document.getElementById('submitBtn');
+    const errorAlert = document.getElementById('errorAlert');
+
+    errorAlert.style.display = 'none';
+
+    if (!phone) {
+      document.getElementById('errorMsg').textContent = 'Please enter your phone number.';
+      errorAlert.style.display = 'flex';
+      return;
+    }
+
+    btn.textContent = 'Generating...';
+    btn.classList.add('loading');
+
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // Hide form, show temp password
+        document.getElementById('formFields').style.display = 'none';
+        document.getElementById('tempPassword').textContent = data.temp_password;
+        document.getElementById('tempBox').style.display = 'block';
+        btn.style.display = 'none';
+      } else {
+        document.getElementById('errorMsg').textContent = 'Oops! ' + (data.error || 'Something went wrong.');
+        errorAlert.style.display = 'flex';
+        btn.textContent = 'Generate temporary password';
+        btn.classList.remove('loading');
+      }
+    } catch(err) {
+      document.getElementById('errorMsg').textContent = 'Connection error. Please try again.';
+      errorAlert.style.display = 'flex';
+      btn.textContent = 'Generate temporary password';
+      btn.classList.remove('loading');
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleReset();
+  });
+</script>
+
+</body>
+</html>

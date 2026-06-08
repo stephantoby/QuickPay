@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QuickPay — Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #1a56db;
+    --blue-dark: #1040b0;
+    --blue-light: #e8f0fe;
+    --black: #0d0d0d;
+    --gray: #6b7280;
+    --gray-light: #f4f6f9;
+    --border: #e5e7eb;
+    --white: #ffffff;
+    --error: #ef4444;
+    --success: #22c55e;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+  }
+
+  /* LEFT — FORM PANEL */
+  .form-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 48px;
+    background: var(--blue-light);
+  }
+
+  .form-box {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 40px;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    background: var(--blue);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 14px;
+  }
+  .logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--black);
+    letter-spacing: -0.3px;
+  }
+
+  .form-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--black);
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .form-sub {
+    font-size: 14px;
+    color: var(--gray);
+    margin-bottom: 32px;
+  }
+
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--black);
+    margin-bottom: 7px;
+  }
+
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-icon {
+    position: absolute;
+    left: 14px;
+    color: var(--gray);
+    font-size: 15px;
+    pointer-events: none;
+  }
+  .input-wrap input,
+  .input-wrap select {
+    width: 100%;
+    padding: 12px 14px 12px 40px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--black);
+    background: var(--white);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    appearance: none;
+  }
+  .input-wrap input:focus,
+  .input-wrap select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+  }
+  .input-wrap input::placeholder { color: #adb5bd; }
+
+  .toggle-password {
+    position: absolute;
+    right: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray);
+    font-size: 15px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+  }
+  .toggle-password:hover { color: var(--black); }
+
+  /* ROLE TOGGLE */
+  .role-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .role-option { display: none; }
+  .role-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray);
+    background: var(--white);
+    transition: all 0.15s;
+  }
+  .role-label span { font-size: 20px; }
+  .role-option:checked + .role-label {
+    border-color: var(--blue);
+    background: var(--blue-light);
+    color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+  }
+  .role-field-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--black);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  /* ALERT */
+  .alert {
+    display: none;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    gap: 8px;
+    align-items: center;
+  }
+  .alert.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+  .alert.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+
+  .btn-submit {
+    width: 100%;
+    padding: 13px;
+    background: var(--blue);
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    margin-bottom: 24px;
+    margin-top: 8px;
+  }
+  .btn-submit:hover { background: var(--blue-dark); transform: translateY(-1px); }
+  .btn-submit.loading { opacity: 0.7; pointer-events: none; }
+
+  .form-footer {
+    text-align: center;
+    font-size: 14px;
+    color: var(--gray);
+  }
+  .form-footer a {
+    color: var(--blue);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .form-footer a:hover { text-decoration: underline; }
+
+  /* RIGHT — BRAND PANEL */
+  .brand-panel {
+    background: linear-gradient(160deg, #1a56db 0%, #1040b0 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 64px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .brand-panel::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .brand-panel::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: -60px;
+    width: 400px; height: 400px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .brand-content { position: relative; z-index: 1; }
+
+  .brand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 32px;
+    letter-spacing: 0.3px;
+  }
+
+  .brand-title {
+    font-size: clamp(1.6rem, 2.5vw, 2.4rem);
+    font-weight: 800;
+    color: white;
+    letter-spacing: -0.8px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .brand-sub {
+    font-size: 15px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+    max-width: 340px;
+    margin: 0 auto 48px;
+  }
+
+  .brand-features {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: left;
+  }
+  .brand-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(255,255,255,0.9);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .brand-feature-icon {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 768px) {
+    .split { grid-template-columns: 1fr; }
+    .brand-panel { display: none; }
+    .form-panel { padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="split">
+
+  <!-- LEFT: FORM -->
+  <div class="form-panel">
+    <div class="form-box">
+
+      <a href="{{ url_for('root') }}" class="logo">
+        <div class="logo-mark">QP</div>
+        <span class="logo-text">QuickPay</span>
+      </a>
+
+      <h1 class="form-title">Create your account</h1>
+      <p class="form-sub">Join QuickPay and start accepting M-Pesa payments online</p>
+
+      <div class="alert error" id="errorAlert">
+        <span>⚠</span> <span id="errorMsg">Something went wrong.</span>
+      </div>
+      <div class="alert success" id="successAlert">
+        <span>✓</span> <span id="successMsg">Account created! Redirecting...</span>
+      </div>
+
+      <!-- ROLE SELECTOR -->
+      <span class="role-field-label">I am a</span>
+      <div class="role-toggle">
+        <input type="radio" name="role" id="roleMerchant" value="Merchant" class="role-option" checked/>
+        <label for="roleMerchant" class="role-label">
+          <span>🏪</span> Merchant
+        </label>
+        <input type="radio" name="role" id="roleCustomer" value="Customer" class="role-option"/>
+        <label for="roleCustomer" class="role-label">
+          <span>👤</span> Customer
+        </label>
+      </div>
+
+      <div class="field">
+        <label for="name">Full name</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" id="name" placeholder="Your full name" autocomplete="name"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email address</label>
+        <div class="input-wrap">
+          <span class="input-icon">✉</span>
+          <input type="email" id="email" placeholder="your@email.com" autocomplete="email"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="phone">M-Pesa phone number</label>
+        <div class="input-wrap">
+          <span class="input-icon">📱</span>
+          <input type="tel" id="phone" placeholder="258840000000" autocomplete="tel"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="password" placeholder="••••••••" autocomplete="new-password"/>
+          <button class="toggle-password" onclick="togglePassword()" type="button" id="toggleBtn">👁</button>
+        </div>
+      </div>
+
+      <button class="btn-submit" onclick="handleRegister()" id="submitBtn">Create account</button>
+
+      <p class="form-footer">
+        Already have an account? <a href="{{ url_for('auth.login_page') }}">Sign in</a>
+      </p>
+
+    </div>
+  </div>
+
+  <!-- RIGHT: BRAND -->
+  <div class="brand-panel">
+    <div class="brand-content">
+      <div class="brand-badge">🇲🇿 Built for Mozambique</div>
+      <h2 class="brand-title">Join QuickPay and protect your privacy</h2>
+      <p class="brand-sub">
+        Stop sharing your personal M-Pesa number with strangers. Get a merchant account and accept payments safely online.
+      </p>
+      <div class="brand-features">
+        <div class="brand-feature">
+          <div class="brand-feature-icon">🔒</div>
+          Your personal number stays private
+        </div>
+        <div class="brand-feature">
+          <div class="brand-feature-icon">🛡</div>
+          No risk of fraud or impersonation
+        </div>
+        <div class="brand-feature">
+          <div class="brand-feature-icon">⚡</div>
+          Instant M-Pesa STK Push payments
+        </div>
+        <div class="brand-feature">
+          <div class="brand-feature-icon">📊</div>
+          Full transaction dashboard
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function togglePassword() {
+    const input = document.getElementById('password');
+    const btn = document.getElementById('toggleBtn');
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = '🙈';
+    } else {
+      input.type = 'password';
+      btn.textContent = '👁';
+    }
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorAlert');
+    document.getElementById('errorMsg').textContent = msg;
+    el.style.display = 'flex';
+    document.getElementById('successAlert').style.display = 'none';
+  }
+
+  function showSuccess(msg) {
+    const el = document.getElementById('successAlert');
+    document.getElementById('successMsg').textContent = msg;
+    el.style.display = 'flex';
+    document.getElementById('errorAlert').style.display = 'none';
+  }
+
+  async function handleRegister() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const password = document.getElementById('password').value;
+    const role = document.querySelector('input[name="role"]:checked').value;
+    const btn = document.getElementById('submitBtn');
+
+    document.getElementById('errorAlert').style.display = 'none';
+    document.getElementById('successAlert').style.display = 'none';
+
+    if (!name || !email || !phone || !password) {
+      showError('Oops! Please fill in all fields.');
+      return;
+    }
+
+    btn.textContent = 'Creating account...';
+    btn.classList.add('loading');
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, password, role })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        showSuccess('Account created! Redirecting to login...');
+        setTimeout(() => {
+          window.location.href = "{{ url_for('auth.login_page') }}";
+        }, 1500);
+      } else {
+        showError('Oops! ' + (data.error || 'Something went wrong.'));
+        btn.textContent = 'Create account';
+        btn.classList.remove('loading');
+      }
+    } catch (err) {
+      showError('Something went wrong. Please try again.');
+      btn.textContent = 'Create account';
+      btn.classList.remove('loading');
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleRegister();
+  });
+</script>
+
+</body>
+</html>

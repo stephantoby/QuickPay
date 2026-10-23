@@ -4,7 +4,7 @@
 
 QuickPay is a Flask web application that lets merchants in Mozambique, such as Instagram sellers and small online shops, request M-Pesa payments from customers through a checkout flow. Payments are confirmed by Safaricom's callback to the server, not by screenshots or messages sent by the customer.
 
-Built as a graduation project for the B.Sc. in Computer Engineering at the European University of Lefke (2026). Inspired by [PaySuite](https://paysuite.co.mz), a Mozambican payment platform.
+Built as a graduation project for the B.Sc. in Computer Engineering at the European University of Lefke (2026). Originally inspired by Pix, Brazil's instant payment system, and [PaySuite](https://paysuite.co.mz), a Mozambican payment platform.
 
 > **Status:** works end to end against the Safaricom Daraja **sandbox**. It is not deployed and has not gone live with Safaricom. Deployment and production hardening are the current focus (see [Roadmap](#roadmap)).
 
